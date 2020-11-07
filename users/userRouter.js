@@ -77,17 +77,64 @@ router.get('/:id', (req, res) => {
   })
 });
 
+//get the posts the user made
 router.get('/:id/posts',  validateUserId,(req, res) => {
   // do your magic!
-});
+      Users
+      .getUserPosts(req.params.id)
+      .then(msg =>{
+        res.status(200).json(msg)
+      })
+  .catch(error=>{
+    console.log(error);
+    res.status(500).json({
+      message:'error getting users post'
+    })
+  })
+})
+
 
 router.delete('/:id', validateUserId, (req, res) => {
   // do your magic!
+  const id = req.params.id
+  Users
+  .remove(id)
+  .then(user =>{
+    res.status(200).json({
+      message: 'user deleted'
+    })
+  })
+  .catch(error=>{
+    console.log(error);
+    res.status(500).json({
+      message: 'error with db'
+    })
+  })
 });
 
 router.put('/:id', validateUserId, (req, res) => {
   // do your magic!
+  Users
+  .update(req.params.id, req.body)
+  .then(user=>{
+    if(user){
+      res.status(200).json(user);
+    }else{
+      res.status(400).json({
+        message: 'user cant be found'
+      })
+    }
+  })
+  .catch(error=>{
+    console.log(error);
+    res.status(500).json({
+      message: 'error with db'
+    })
+  })
 });
+
+
+
 
 //custom middleware
 
@@ -126,6 +173,18 @@ function validateUser(req, res, next) {
 
 function validatePost(req, res, next) {
   // do your magic!
+  const body = req.body;
+  if(!body){
+    res.status(400).json({
+      message: 'misssing post'
+    }) 
+  } else if (!body.text){
+      res.status(400).json({
+        message: 'missing text for post msg'
+      })
+  }else{
+    next();
+  }
 }
 
 module.exports = router;
