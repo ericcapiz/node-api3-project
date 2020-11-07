@@ -1,9 +1,23 @@
 const express = require('express');
-
+const Users = require('./userDb');
+const Posts = require('../posts/postDb');
 const router = express.Router();
 
-router.post('/', (req, res) => {
+
+
+router.post('/', validateUser, (req, res) => {
   // do your magic!
+  Users
+  .insert(req.body)
+  .then(user =>{
+    res.status(200).json(user);
+  })
+  .catch(error=>{
+    console.log(error);
+    res.status(500).json({
+      message: 'error adding the user'
+    })
+  })
 });
 
 router.post('/:id/posts', (req, res) => {
@@ -38,6 +52,11 @@ function validateUserId(req, res, next) {
 
 function validateUser(req, res, next) {
   // do your magic!
+  //will validate if a name was entered in
+  const body = req.body;
+  !body.name || body.name === {} ?
+    res.status(400).json({message: 'Please include your name'})
+    : next();
 }
 
 function validatePost(req, res, next) {
