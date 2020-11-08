@@ -8,11 +8,11 @@ const morgan = require('morgan');
 const server = express();
 
 //middleware
-
+server.use(express.json());
 server.use(logger);
 server.use(helmet());
 server.use(morgan());
-server.use(express.json());
+
 
 //endpoints for router
 server.use('/api/posts', postRouter);
